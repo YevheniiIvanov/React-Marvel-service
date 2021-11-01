@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+
 
 import useMarvelService from '../../services/MarveService';
 import Spinner from '../spiner/Spinner';
@@ -81,11 +83,14 @@ const View = ({char}) => {
                 {comics.length > 0 ? null : 'There is no comics with this character'}
                 {
                     comics.map((item, i) => {
+                        const uniqId = item.resourceURI.substr(43);
                         // eslint-disable-next-line
                         if (i > 9) return;
                         return (
                             <li key={i} className="char__comics-item">
-                                {item.name}
+                                <Link to={`/comics/${uniqId}`}>
+                                    {item.name}
+                                </Link>
                             </li>
                         )
                     })
