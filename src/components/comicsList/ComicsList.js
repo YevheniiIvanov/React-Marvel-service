@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import {useState, useEffect} from 'react';
 import useMarvelService from '../../services/MarveService';
 import Spinner from '../spiner/Spinner';
 import ErrorMessage from '../errorMassage/errorMessage';
@@ -6,8 +6,9 @@ import ErrorMessage from '../errorMassage/errorMessage';
 import './comicsList.scss';
 
 const ComicsList = () => {
-    const [comics, setComics] = useState([]);
-    const [newItemLoading, setNewItemLoading] = useState(false);
+
+    const [comicsList, setComicsList] = useState([]);
+    const [newItemLoading, setnewItemLoading] = useState(false);
     const [offset, setOffset] = useState(0);
     const [comicsEnded, setComicsEnded] = useState(false);
 
@@ -15,34 +16,30 @@ const ComicsList = () => {
 
     useEffect(() => {
         onRequest(offset, true);
-    },[])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     const onRequest = (offset, initial) => {
-        initial ? setNewItemLoading(false) : setNewItemLoading(true);
+        initial ? setnewItemLoading(false) : setnewItemLoading(true);
         getAllComics(offset)
             .then(onComicsListLoaded)
     }
 
     const onComicsListLoaded = (newComicsList) => {
         let ended = false;
-        if(newComicsList.length < 8){
+        if (newComicsList.length < 8) {
             ended = true;
         }
-        setComics(comics => [...comics, ...newComicsList]);
-
-        setNewItemLoading(newItemLoading => false)
-        setOffset(offset => offset + 8);
-        setComicsEnded(comicsEnded => ended);
+        setComicsList([...comicsList, ...newComicsList]);
+        setnewItemLoading(false);
+        setOffset(offset + 8);
+        setComicsEnded(ended);
     }
 
-
-    function renderComics(arr) {
-        const comics =  arr.map((item) => {
-            
+    function renderItems (arr) {
+        const items = arr.map((item, i) => {
             return (
-                <li 
-                    className="comics__item"
-                    key="i">
+                <li className="comics__item" key={i}>
                     <a href="#">
                         <img src={item.thumbnail} alt={item.title} className="comics__item-img"/>
                         <div className="comics__item-name">{item.title}</div>
@@ -50,16 +47,17 @@ const ComicsList = () => {
                     </a>
                 </li>
             )
-        });
+        })
 
         return (
             <ul className="comics__grid">
-                {comics}
-            </ul>   
+                {items}
+            </ul>
         )
     }
 
-    const items = renderComics(comics)
+    const items = renderItems(comicsList);
+
     const errorMessage = error ? <ErrorMessage/> : null;
     const spinner = loading && !newItemLoading ? <Spinner/> : null;
 
@@ -69,10 +67,10 @@ const ComicsList = () => {
             {spinner}
             {items}
             <button 
+                disabled={newItemLoading} 
+                style={{'display' : comicsEnded ? 'none' : 'block'}}
                 className="button button__main button__long"
-                disabled={newItemLoading}
-                onClick={() => onRequest(offset)}
-                style={{display: comicsEnded ? 'none' : 'block'}}>
+                onClick={() => onRequest(offset)}>
                 <div className="inner">load more</div>
             </button>
         </div>

@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import {useState, useEffect, useRef} from 'react';
 import PropTypes from 'prop-types';
-import useMarvelService from '../../services/MarveService';
+
 import Spinner from '../spiner/Spinner';
 import ErrorMessage from '../errorMassage/errorMessage';
-
+import useMarvelService from '../../services/MarveService';
 import './charList.scss';
 
 const CharList = (props) => {
@@ -12,11 +12,12 @@ const CharList = (props) => {
     const [newItemLoading, setNewItemLoading] = useState(false);
     const [offset, setOffset] = useState(210);
     const [charEnded, setCharEnded] = useState(false);
-    
-    const {loading, error, getAllCharacters } = useMarvelService();
+
+    const {loading, error, getAllCharacters} = useMarvelService();
 
     useEffect(() => {
         onRequest(offset, true);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const onRequest = (offset, initial) => {
@@ -27,7 +28,7 @@ const CharList = (props) => {
 
     const onCharListLoaded = (newCharList) => {
         let ended = false;
-        if (newCharList.length < 9){
+        if (newCharList.length < 9) {
             ended = true;
         }
 
@@ -65,7 +66,7 @@ const CharList = (props) => {
                 <li 
                     className="char__item"
                     tabIndex={0}
-                    ref={elem => itemRefs.current[i] = elem}
+                    ref={el => itemRefs.current[i] = el}
                     key={item.id}
                     onClick={() => {
                         props.onCharSelected(item.id);
@@ -89,15 +90,11 @@ const CharList = (props) => {
             </ul>
         )
     }
-
-
-
-    
     
     const items = renderItems(charList);
 
     const errorMessage = error ? <ErrorMessage/> : null;
-    const spinner = loading && !newItemLoading? <Spinner/> : null;
+    const spinner = loading && !newItemLoading ? <Spinner/> : null;
 
     return (
         <div className="char__list">
@@ -107,13 +104,12 @@ const CharList = (props) => {
             <button 
                 className="button button__main button__long"
                 disabled={newItemLoading}
-                onClick={() => onRequest(offset)}
-                style={{display: charEnded ? 'none' : 'block'}}>
+                style={{'display': charEnded ? 'none' : 'block'}}
+                onClick={() => onRequest(offset)}>
                 <div className="inner">load more</div>
             </button>
         </div>
     )
-
 }
 
 CharList.propTypes = {
