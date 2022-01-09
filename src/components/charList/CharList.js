@@ -9,16 +9,29 @@ import './charList.scss';
 const CharList = (props) => {
 
     const [charList, setCharList] = useState([]);
-    const [newItemLoading, setNewItemLoading] = useState(false);
+    const [newItemLoading, setNewItemLoading] = useState(true);
     const [offset, setOffset] = useState(210);
     const [charEnded, setCharEnded] = useState(false);
 
     const {loading, error, getAllCharacters} = useMarvelService();
 
+    const onScroll = () => {
+        if (window.scrollY + document.documentElement.clientHeight >= document.body.offsetHeight) {
+            setNewItemLoading(true);
+        }
+    };
+
     useEffect(() => {
-        onRequest(offset, true);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+        if (newItemLoading && !charEnded) {
+            onRequest(offset);
+        }
+        // eslint-disable-next-line
+    }, [newItemLoading]);
+
+    useEffect(() => {
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+    });
 
     const onRequest = (offset, initial) => {
         initial ? setNewItemLoading(false) : setNewItemLoading(true);
@@ -36,6 +49,7 @@ const CharList = (props) => {
         setNewItemLoading(newItemLoading => false);
         setOffset(offset => offset + 9);
         setCharEnded(charEnded => ended);
+        // setPageHight(document.documentElement.scrollHeight);
     }
 
     const itemRefs = useRef([]);
@@ -101,6 +115,7 @@ const CharList = (props) => {
             {errorMessage}
             {spinner}
             {items}
+            
             <button 
                 className="button button__main button__long"
                 disabled={newItemLoading}
